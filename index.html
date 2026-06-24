@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>MK AI</title>
+    <style>
+        body { background: #0a0a0a; color: white; font-family: Arial; margin: 0; padding: 20px; }
+        h1 { color: cyan; text-align: center; }
+        #chat { background: #1a1a1a; border-radius: 10px; padding: 15px; height: 400px; overflow-y: auto; margin-bottom: 10px; }
+        .user { color: #00ff00; margin: 5px 0; }
+        .ai { color: #00bfff; margin: 5px 0; }
+        input { width: 75%; padding: 10px; background: #1a1a1a; color: white; border: 1px solid cyan; border-radius: 5px; }
+        button { padding: 10px 15px; background: cyan; color: black; border: none; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <h1>MK AI</h1>
+    <div id="chat"></div>
+    <input type="text" id="sawal" placeholder="Kuch poocho...">
+    <button onclick="bhejo()">Send</button>
+    <script>
+        function bhejo() {
+            var sawal = document.getElementById('sawal').value;
+            if (!sawal) return;
+            document.getElementById('chat').innerHTML += '<p class="user">Tum: ' + sawal + '</p>';
+            document.getElementById('sawal').value = '';
+            fetch('/chat', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({message: sawal})
+            })
+            .then(r => r.json())
+            .then(d => {
+                document.getElementById('chat').innerHTML += '<p class="ai">MK AI: ' + d.reply + '</p>';
+            });
+        }
+    </script>
+</body>
+</html>
