@@ -1,25 +1,20 @@
-import json
+from flask import Flask, request, jsonify
 from groq import Groq
 
+app = Flask(__name__)
 client = Groq(api_key="YAHAN_APNI_KEY_LIKHO")
 
-try:
-    file = open("profile.json", "r")
-    user = json.load(file)
-    file.close()
-except:
-    user = {"naam": "Dost", "city": "Pakistan", "umar": "?"}
-
 messages = [
-    {"role": "system", "content": "Tum MK AI ho. Tumhara malik " + user["naam"] + " hai jo " + user["city"] + " mein rehta hai. Hamesha Roman Urdu mein jawab do. Chhote aur helpful jawab do."}
+    {"role": "system", "content": "Tum MK AI ho. Hamesha Roman Urdu mein jawab do. Chhote helpful jawab do."}
 ]
 
-while True:
-    sawal = input(user["naam"] + ": ")
-    if sawal.lower() == "exit":
-        print("Allah Hafiz!")
-        break
+@app.route("/")
+def home():
+    return open("index.html").read()
 
+@app.route("/chat", methods=["POST"])
+def chat():
+    sawal = request.json["message"]
     messages.append({"role": "user", "content": sawal})
     response = client.chat.completions.create(
         model="llama-3.3-70b-versatile",
@@ -27,4 +22,7 @@ while True:
     )
     jawab = response.choices[0].message.content
     messages.append({"role": "assistant", "content": jawab})
-    print("MK AI: " + jawab)
+    return jsonify({"reply": jawab})
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=8080)
